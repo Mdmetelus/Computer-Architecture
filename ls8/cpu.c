@@ -1,3 +1,7 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "cpu.h"
 
 #define DATA_LEN 6
@@ -9,9 +13,21 @@
 #define STR 0b00001000 // store the next value to reg
 
 // reading whats in ram
-int cpu_ram_read(struct cpu *cpu, int index)
-{
+int cpu_ram_read(struct cpu *cpu, int index) {
   return cpu->ram[index];
+}
+
+// write to the ram
+void cpu_ram_write(struct cpu *cpu, int index) {
+  char *space = malloc(cpu->ram, sizeof(cpu->ram));
+  for (int i = 0; i < sizeof(cpu->ram); i++) {
+    if (cpu->ram[i] == '/0') {
+      cpu->ram[i] = space;
+    }
+    else {
+      printf("There is no space available");
+    }
+  }
 }
 
 /**
