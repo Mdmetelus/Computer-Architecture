@@ -2,24 +2,48 @@
 
 #define DATA_LEN 6
 
+#define LDI 0b10000010
+#define NOP 0b00000000
+#define PRN 0b01000111
+#define HLT 0b00000001
+#define STR 0b00001000 // store the next value to reg
+
+// reading whats in ram
+int cpu_ram_read(struct cpu *cpu, int index)
+{
+  return cpu->ram[index];
+}
+
 /**
  * Load the binary bytes from a .ls8 source file into a RAM array
  */
 void cpu_load(struct cpu *cpu)
 {
   char data[DATA_LEN] = {
-    // From print8.ls8
-    0b10000010, // LDI R0,8
-    0b00000000,
-    0b00001000,
-    0b01000111, // PRN R0
-    0b00000000,
-    0b00000001  // HLT
+      // From print8.ls8
+      LDI, // LDI R0,8
+      NOP,
+      STR, 
+      8,   
+      PRN, 
+      NOP,
+      HLT // HLT
+      // 0b10000010, // LDI R0,8
+      // 0b00000000,
+      // 0b00001000,
+      // 0b01000111, // PRN R0
+      // 0b00000000,
+      // 0b00000001  // HLT
+
   };
 
   int address = 0;
 
   for (int i = 0; i < DATA_LEN; i++) {
+    if (data[i] == STR)
+    {
+      cpu->registers[address] = data[i + 1];
+    }
     cpu->ram[address++] = data[i];
   }
 
