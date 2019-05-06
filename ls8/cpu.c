@@ -13,12 +13,12 @@
 #define STR 0b00001000 // store the next value to reg
 
 // reading whats in ram
-int cpu_ram_read(struct cpu *cpu, int index) {
-  return cpu->ram[index];
+int cpu_ram_read(struct cpu *cpu, unsigned char mar) {
+  return cpu->ram[mar];
 }
 
 // write to the ram
-void cpu_ram_write(struct cpu *cpu, int index) {
+void cpu_ram_write(struct cpu *cpu, unsigned char mdr) {
   char *space = malloc(cpu->ram, sizeof(cpu->ram));
   for (int i = 0; i < sizeof(cpu->ram); i++) {
     if (cpu->ram[i] == '/0') {
@@ -28,12 +28,13 @@ void cpu_ram_write(struct cpu *cpu, int index) {
       printf("There is no space available");
     }
   }
+  // cpu->ram[mdr] = mdr
 }
 
 /**
  * Load the binary bytes from a .ls8 source file into a RAM array
  */
-void cpu_load(struct cpu *cpu)
+void cpu_load(struct cpu *cpu, char *filename)
 {
   char data[DATA_LEN] = {
       // From print8.ls8
