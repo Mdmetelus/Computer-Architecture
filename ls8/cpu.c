@@ -36,35 +36,35 @@ void cpu_ram_write(struct cpu *cpu, unsigned char mdr) {
  */
 void cpu_load(struct cpu *cpu, char *filename)
 {
-  char data[DATA_LEN] = {
-      // From print8.ls8
-      LDI, // LDI R0,8
-      NOP,
-      STR, 
-      8,   
-      PRN, 
-      NOP,
-      HLT // HLT
-      // 0b10000010, // LDI R0,8
-      // 0b00000000,
-      // 0b00001000,
-      // 0b01000111, // PRN R0
-      // 0b00000000,
-      // 0b00000001  // HLT
+  // open file
+  FILE *fp = fopen(filename, "r");
+  
+  if (fp == NULL)
+  {
+    fprintf(stderr, "ls8: error opening file:  %s\n", filename);
+    exit(2);
+  }
 
-  };
+  char line[9999]; 
 
   int address = 0;
 
-  for (int i = 0; i < DATA_LEN; i++) {
-    if (data[i] == STR)
+
+  while (fgets(line, sizeof(line), fp) != NULL)
+  {
+    char *endptr; // grabs none int lines
+    // converts string to ints
+    unsigned char val = strtoul(line, &endptr, 2);
+    // prevents collecting none int lines
+    if (line == endptr)
     {
-      cpu->registers[address] = data[i + 1];
+      continue;
     }
-    cpu->ram[address++] = data[i];
+    cpu->ram[address++] = val;
   }
 
   // TODO: Replace this with something less hard-coded
+  fclose(fp);
 }
 
 /**
