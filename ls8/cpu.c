@@ -75,6 +75,12 @@ void alu(struct cpu *cpu, enum alu_op op, unsigned char regA, unsigned char regB
   switch (op) {
     case ALU_MUL:
       // TODO
+      cpu->reg[regA] = regA * regB;
+      break;
+    case ALU_NOP:
+      // No operation. Do nothing for this instruction
+      break;
+    case ALU_NOT:
       break;
 
     // TODO: implement more ALU ops
