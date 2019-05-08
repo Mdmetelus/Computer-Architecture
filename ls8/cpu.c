@@ -6,11 +6,11 @@
 
 #define DATA_LEN 6
 
-#define LDI 0b10000010
-#define NOP 0b00000000
-#define PRN 0b01000111
-#define HLT 0b00000001
-#define STR 0b00001000 // store the next value to reg
+// #define LDI 0b10000010
+// #define NOP 0b00000000
+// #define PRN 0b01000111
+// #define HLT 0b00000001
+// #define STR 0b00001000 // store the next value to reg
 
 // reading whats in ram
 int cpu_ram_read(struct cpu *cpu, unsigned char mar) {
@@ -75,7 +75,10 @@ void alu(struct cpu *cpu, enum alu_op op, unsigned char regA, unsigned char regB
   switch (op) {
     case ALU_MUL:
       // TODO
-      cpu->reg[regA] = regA * regB;
+      cpu->register[regA] = regA * regB;
+      break;
+    case ALU_ADD:
+      cpu->registers[regA] = regA + regB;
       break;
     case ALU_NOP:
       // No operation. Do nothing at this instruction
@@ -138,10 +141,10 @@ void cpu_init(struct cpu *cpu)
     cpu->registers[i] = 0;
   }
   
-  cpu->registers[7] = '0xF4';
+  cpu->registers[7] = 0xF4;
   
   cpu->PC = 0;
 
   // RAM is set to 0
-  void memset(cpu->ram, 0, sizeof(cpu->ram));
+  memset(cpu->ram, 0, sizeof(cpu->ram));
 }
