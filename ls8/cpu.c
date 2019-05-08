@@ -107,6 +107,11 @@ void alu(struct cpu *cpu, enum alu_op op, unsigned char regA, unsigned char regB
 void cpu_run(struct cpu *cpu)
 {
   int running = 1; // True until we get a HLT instruction
+  // init current instructions
+  unsigned char IR;
+  // init operand 0 and 1
+  unsigned char operand0;
+  unsigned char operand1;
 
   while (running) {
     // TODO
@@ -116,6 +121,7 @@ void cpu_run(struct cpu *cpu)
     // 4. switch() over it to decide on a course of action.
     // 5. Do whatever the instruction should do according to the spec.
     // 6. Move the PC to the next instruction.
+    IR = cpu_ram_read(cpu, cpu->PC);
   }
 }
 
@@ -135,6 +141,7 @@ void cpu_init(struct cpu *cpu)
   cpu->registers[7] = '0xF4';
   
   cpu->PC = 0;
-  
+
+  // RAM is set to 0
   void memset(cpu->ram, 0, sizeof(cpu->ram));
 }
