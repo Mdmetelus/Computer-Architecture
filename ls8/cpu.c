@@ -19,16 +19,16 @@ int cpu_ram_read(struct cpu *cpu, unsigned char mar) {
 
 // write to the ram
 void cpu_ram_write(struct cpu *cpu, unsigned char mdr) {
-  char *space = malloc(cpu->ram, sizeof(cpu->ram));
-  for (int i = 0; i < sizeof(cpu->ram); i++) {
-    if (cpu->ram[i] == '/0') {
-      cpu->ram[i] = space;
-    }
-    else {
-      printf("There is no space available");
-    }
-  }
-  // cpu->ram[mdr] = mdr
+  // char *space = malloc(cpu->ram, sizeof(cpu->ram));
+  // for (int i = 0; i < sizeof(cpu->ram); i++) {
+  //   if (cpu->ram[i] == '/0') {
+  //     cpu->ram[i] = space;
+  //   }
+  //   else {
+  //     printf("There is no space available");
+  //   }
+  // }
+  cpu->ram[mdr] = mdr;
 }
 
 /**
@@ -52,10 +52,10 @@ void cpu_load(struct cpu *cpu, char *filename)
 
   while (fgets(line, sizeof(line), fp) != NULL)
   {
-    char *endptr; // grabs none int lines
-    // converts string to ints
+    char *endptr; 
+    
     unsigned char val = strtoul(line, &endptr, 2);
-    // prevents collecting none int lines
+    
     if (line == endptr)
     {
       continue;
@@ -78,12 +78,26 @@ void alu(struct cpu *cpu, enum alu_op op, unsigned char regA, unsigned char regB
       cpu->reg[regA] = regA * regB;
       break;
     case ALU_NOP:
-      // No operation. Do nothing for this instruction
+      // No operation. Do nothing at this instruction
       break;
     case ALU_NOT:
       break;
 
     // TODO: implement more ALU ops
+    case ALU_POP:
+      
+      break;
+    case ALU_PRA:
+      
+      break;
+    case ALU_PRN:
+      break;
+    case ALU_PUSH:
+      
+      break;
+    case ALU_RET:
+      
+      break;
   }
 }
 
