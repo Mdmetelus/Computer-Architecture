@@ -34,7 +34,7 @@ void cpu_ram_write(struct cpu *cpu, unsigned char mdr) {
 /**
  * Load the binary bytes from a .ls8 source file into a RAM array
  */
-void cpu_load(struct cpu *cpu, char *filename)
+void cpu_load(struct cpu *cpu)
 {
   // open file
   FILE *fp = fopen(filename, "r");
@@ -115,6 +115,7 @@ void cpu_run(struct cpu *cpu)
   // init operand 0 and 1
   unsigned char operand0;
   unsigned char operand1;
+  unsigned char operand2;
 
   while (running) {
     // TODO
@@ -125,6 +126,33 @@ void cpu_run(struct cpu *cpu)
     // 5. Do whatever the instruction should do according to the spec.
     // 6. Move the PC to the next instruction.
     IR = cpu_ram_read(cpu, cpu->PC);
+
+    operand1 = cpu_ram_read(cpu, cpu->PC + 1);
+    operand2 = cpu_ram_read(cpu, cpu->PC + 2);
+
+    switch (IR)
+    {
+      // LDI
+    case 0b10000010:
+      
+
+      break;
+      // PRN
+    case 0b01000111:
+      printf("%d", cpu->registers[operand1]);
+      printf("%d", cpu->registers[operand2]);
+      break;
+      // HLT
+    case 0b00000001:
+      running = 0; // stops the while loop
+      break;
+      
+      // MUL
+    case 0b10100010:
+      break;
+    default:
+      printf("Your code does not work bruhh %d", IR);
+    }
   }
 }
 

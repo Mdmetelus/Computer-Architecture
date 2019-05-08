@@ -18,14 +18,14 @@ struct cpu {
 enum alu_op
 {
   ALU_MUL,
+  ALU_ADD,
   ALU_NOP,
   ALU_NOT,
   ALU_POP,
   ALU_PRA,
   ALU_PRN,
   ALU_PUSH,
-  ALU_RET,
-  ALU_ADD
+  ALU_RET
   // Add more here
 };
 
@@ -47,7 +47,7 @@ enum alu_op
 
 // Function declarations
 
-extern void cpu_load(struct cpu *cpu);
+extern void cpu_load(struct cpu *cpu, char *filename);
 extern void cpu_init(struct cpu *cpu);
 extern void cpu_run(struct cpu *cpu);
 
