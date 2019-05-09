@@ -88,55 +88,51 @@ void cpu_load(struct cpu *cpu, char *filename) {
 /**
  * ALU
  */
-void alu(struct cpu *cpu, enum alu_op op, unsigned char regA, unsigned char regB)
-{
-  switch (op) {
-    case ALU_MUL:
-      // TODO
-      cpu->registers[regA] *= regB;
-      break;
-    case ALU_ADD:
-      cpu->registers[regA] = regA + regB;
-      break;
-    case ALU_NOP:
-      // No operation. Do nothing at this instruction
-      cpu->registers[regA] += regB;
-      break;
-    case ALU_NOT:
-      break;
+// void alu(struct cpu *cpu, enum alu_op op, unsigned char regA, unsigned char regB)
+// {
+//   switch (op) {
+//     case ALU_MUL:
+//       // TODO
+//       cpu->registers[regA] *= regB;
+//       break;
+//     case ALU_ADD:
+//       cpu->registers[regA] = regA + regB;
+//       break;
+//     case ALU_NOP:
+//       // No operation. Do nothing at this instruction
+//       cpu->registers[regA] += regB;
+//       break;
+//     case ALU_NOT:
+//       break;
 
-    // TODO: implement more ALU ops
-    case ALU_POP:
+//     // TODO: implement more ALU ops
+//     case ALU_POP:
       
-      break;
-    case ALU_PRA:
+//       break;
+//     case ALU_PRA:
       
-      break;
-    case ALU_PRN:
-      break;
-    case ALU_PUSH:
+//       break;
+//     case ALU_PRN:
+//       break;
+//     case ALU_PUSH:
       
-      break;
-    case ALU_RET:
+//       break;
+//     case ALU_RET:
       
-      break;
-    default:
-      break;
-  }
-}
+//       break;
+//     default:
+//       break;
+//   }
+// }
 
 /**
  * Run the CPU
  */
 void cpu_run(struct cpu *cpu)
 {
-  int running = 1; // True until we get a HLT instruction
-  // init current instructions
-  // unsigned char IR;
-  // // init operand 0 and 1
-  // unsigned char operand0;
-  // unsigned char operand1;
-  // unsigned char operand2;
+  int running = 1;
+
+  unsigned char command, operand1, operand2;
 
   while (running) {
     // TODO
@@ -148,51 +144,60 @@ void cpu_run(struct cpu *cpu)
     // 6. Move the PC to the next instruction.
     unsigned char command = cpu->ram[cpu->PC];
 
-    unsigned int combined_operands = command >> 6;
+    // unsigned int combined_operands = command >> 6;
 
-    unsigned int operand1;
-    unsigned int operand2;
-    if (combined_operands == 2)
-    {
-      operand1 = cpu->ram[cpu->PC + 1];
-      operand2 = cpu->ram[cpu->PC + 2];
-    }
-    else if (combined_operands == 1)
-    {
-      operand1 = cpu->ram[cpu->PC + 1];
-    }
+    // unsigned int operand1;
+    // unsigned int operand2;
+    // if (combined_operands == 2)
+    // {
+    //   operand1 = cpu->ram[cpu->PC + 1];
+    //   operand2 = cpu->ram[cpu->PC + 2];
+    // }
+    // else if (combined_operands == 1)
+    // {
+    //   operand1 = cpu->ram[cpu->PC + 1];
+    // }
+    command = cpu_ram_read(cpu, cpu->PC);
+
+    operand1 = cpu_ram_read(cpu, cpu->PC + 1);
+    operand2 = cpu_ram_read(cpu, cpu->PC + 2);
 
     switch (command)
     {
       // LDI
-    case HLT:
-      running = 0;
+    case LDI:
+      
+      cpu->registers[operand1] = operand2;
+      
+      cpu->PC += 3;
       break;
       // PRN
     case PRN:
-
       printf("%d\n", cpu->registers[operand1]);
+      cpu->PC += 2;
       break;
-      // HLT
-    case LDI:
-      cpu->registers[operand1] = operand2;
-      break;
-
       // MUL
     case MUL:
       alu(cpu, ALU_MUL, operand1, operand2);
       break;
-    case POP:
-      cpu->registers[operand1] = cpu_ram_read(cpu, cpu->registers[operand1]);
-      break;
-
     case PUSH:
-      cpu_ram_write(cpu, cpu->registers[operand1]);
+      cpu_push(cpu, cpu->registers[operand1]);
+      cpu->PC += 2;
+      break;
+    case POP:
+      cpu->registers[operand1] = cpu_pop(cpu);
+      cpu->PC += 2;
+      break;
+    case HLT:
+      running = 0;
+      cpu->PC += 1;
       break;
     default:
+      printf("Cannot complete this command");
+      exit(1);
       break;
     }
-    cpu->PC += combined_operands + 1;
+
   }
 }
 

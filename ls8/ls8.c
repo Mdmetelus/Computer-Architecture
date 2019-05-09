@@ -5,33 +5,21 @@
 /**
  * Main
  */
-// int main(int argc, char **argv)
-// {
-  // struct cpu cpu;
-// 
-  // if (argc != 2)
-  // {
-    // printf("Usage: ls8.c <filename>");
-    // exit(1);
-// }
 
-//   
-//   char *filename = argv[1];
-//   cpu_init(&cpu);
-//   // pass input to load
-//   cpu_load(&cpu, filename);
-//   cpu_run(&cpu);
-
-//   return 0;
-// }
-
-// int main(void) 
-int main(int argc, char *argv[])
+int main(int argc, char **argv)
 {
   struct cpu cpu;
 
+  if (argc != 2)
+  {
+    fprintf(stderr, "usage: ls8 filename\n");
+    exit(1);
+  }
+
+  char *filename = argv[1];
+
   cpu_init(&cpu);
-  cpu_load(&cpu, argc, argv);
+  cpu_load(&cpu, filename);
   cpu_run(&cpu);
 
   return 0;
