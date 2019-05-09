@@ -5,6 +5,7 @@
 #include "cpu.h"
 
 #define DATA_LEN 6
+#define SP 7
 
 // #define LDI 0b10000010
 // #define NOP 0b00000000
@@ -13,24 +14,23 @@
 // #define STR 0b00001000 // store the next value to reg
 
 // reading whats in ram
-int cpu_ram_read(struct cpu *cpu, unsigned char mar) {
+unsigned char cpu_ram_read(struct cpu *cpu, unsigned char mar) {
   return cpu->ram[mar];
 }
 
 // write to the ram
-void cpu_ram_write(struct cpu *cpu, unsigned char mdr) {
-  // char *space = malloc(cpu->ram, sizeof(cpu->ram));
-  // for (int i = 0; i < sizeof(cpu->ram); i++) {
-  //   if (cpu->ram[i] == '/0') {
-  //     cpu->ram[i] = space;
-  //   }
-  //   else {
-  //     printf("There is no space available");
-  //   }
-  // }
+void cpu_ram_write(struct cpu *cpu, unsigned char mar, unsigned char mdr)
+{
   cpu->ram[mdr] = mdr;
 }
 
+void cpu_push(struct cpu *cpu, unsigned char val)
+{
+  
+  cpu->registers[SP]--;
+  
+  cpu_ram_write(cpu, cpu->registers[SP], val);
+}
 /**
  * Load the binary bytes from a .ls8 source file into a RAM array
  */
@@ -62,13 +62,13 @@ void cpu_load(struct cpu *cpu, int argc, char *argv[])
   while (fgets(line, sizeof(line), fp) != NULL)
   {
       char *ptr;
-    unsigned char instruction = strtol(line, &ptr, 2);
+    unsigned char command = strtol(line, &ptr, 2);
 
     if (ptr == line)
     {
       continue;
     }
-    cpu->ram[++address] = instruction;
+    cpu->ram[++address] = command;
   }
     
 }
@@ -134,9 +134,9 @@ void cpu_run(struct cpu *cpu)
     // 4. switch() over it to decide on a course of action.
     // 5. Do whatever the instruction should do according to the spec.
     // 6. Move the PC to the next instruction.
-    unsigned char instruction = cpu->ram[cpu->PC];
+    unsigned char command = cpu->ram[cpu->PC];
 
-    unsigned int combined_operands = instruction >> 6;
+    unsigned int combined_operands = command >> 6;
 
     unsigned int operand1;
     unsigned int operand2;
@@ -150,7 +150,7 @@ void cpu_run(struct cpu *cpu)
       operand1 = cpu->ram[cpu->PC + 1];
     }
 
-    switch (instruction)
+    switch (command)
     {
       // LDI
     case HLT:
