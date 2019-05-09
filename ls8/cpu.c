@@ -178,7 +178,8 @@ void cpu_run(struct cpu *cpu)
       break;
       // MUL
     case MUL:
-      alu(cpu, ALU_MUL, operand1, operand2);
+      cpu->registers[operand1] *= operand2;
+      cpu->PC += 3;
       break;
     case PUSH:
       cpu_push(cpu, cpu->registers[operand1]);
@@ -193,7 +194,7 @@ void cpu_run(struct cpu *cpu)
       cpu->PC += 1;
       break;
     default:
-      printf("Cannot complete this command");
+      printf("Cannot complete this command\n");
       exit(1);
       break;
     }
