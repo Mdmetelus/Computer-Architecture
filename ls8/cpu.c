@@ -153,34 +153,34 @@ void cpu_run(struct cpu *cpu)
     switch (instruction)
     {
       // LDI
-    case LDI:
-      
-      cpu->registers[operand1] = operand2;
-      
-      cpu->PC += 3;
+    case HLT:
+      running = 0;
       break;
       // PRN
     case PRN:
 
-      printf("Register: %d\n", cpu->registers[operand1]);
-      printf("Register: %d\n", cpu->registers[operand2]);
-      
-      cpu->PC += 2;
+      printf("%d\n", cpu->registers[operand1]);
       break;
       // HLT
-    case HLT:
-      running = 0; // stops the while loop
-      // move the PC to the next instruction
-      cpu->PC += 1;
+    case LDI:
+      cpu->registers[operand1] = operand2;
       break;
 
       // MUL
     case MUL:
+      alu(cpu, ALU_MUL, operand1, operand2);
+      break;
+    case POP:
+      cpu->registers[operand1] = cpu_ram_read(cpu, cpu->registers[operand1]);
+      break;
+
+    case PUSH:
+      cpu_ram_write(cpu, cpu->registers[operand1]);
       break;
     default:
-      printf("Issued an Unexpected instruction 0x%02X at 0x%02X\n", IR, cpu->PC);
-      exit(1);
+      break;
     }
+    cpu->PC += combined_operands + 1;
   }
 }
 
