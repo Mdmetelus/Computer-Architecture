@@ -36,31 +36,48 @@ void cpu_ram_write(struct cpu *cpu, unsigned char mdr) {
  */
 void cpu_load(struct cpu *cpu)
 {
-  // open file
-  FILE *fp = fopen(filename, "r");
-  
-  if (fp == NULL)
-  {
-    fprintf(stderr, "ls8: error opening file:  %s\n", filename);
-    exit(2);
-  }
 
-  char line[9999]; 
+  char data[DATA_LEN] = {
+      // From print8.ls8
+      0b10000010, // LDI R0,8
+      0b00000000,
+      0b00001000,
+      0b01000111, // PRN R0
+      0b00000000,
+      0b00000001 // HLT
+  };
+
+
+  // open file
+  // FILE *fp = fopen(filename, "r");
+  
+  // if (fp == NULL)
+  // {
+  //   fprintf(stderr, "ls8: error opening file:  %s\n", filename);
+  //   exit(2);
+  // }
+
+  // char line[9999]; 
 
   int address = 0;
 
 
-  while (fgets(line, sizeof(line), fp) != NULL)
+  // while (fgets(line, sizeof(line), fp) != NULL)
+  // {
+  //   char *endptr; 
+    
+  //   unsigned char val = strtoul(line, &endptr, 2);
+    
+  //   if (line == endptr)
+  //   {
+  //     continue;
+  //   }
+  //   cpu->ram[address++] = val;
+  // }
+
+  for (int i = 0; i < DATA_LEN; i++)
   {
-    char *endptr; 
-    
-    unsigned char val = strtoul(line, &endptr, 2);
-    
-    if (line == endptr)
-    {
-      continue;
-    }
-    cpu->ram[address++] = val;
+    cpu->ram[address++] = data[i];
   }
 
   // TODO: Replace this with something less hard-coded
@@ -133,25 +150,33 @@ void cpu_run(struct cpu *cpu)
     switch (IR)
     {
       // LDI
-    case 0b10000010:
+    case LDI:
       
-
+      cpu->registers[operand1] = operand2;
+      
+      cpu->PC += 3;
       break;
       // PRN
-    case 0b01000111:
-      printf("%d", cpu->registers[operand1]);
-      printf("%d", cpu->registers[operand2]);
+    case PRN:
+
+      printf("Register: %d\n", cpu->registers[operand1]);
+      printf("Register: %d\n", cpu->registers[operand2]);
+      
+      cpu->PC += 2;
       break;
       // HLT
-    case 0b00000001:
+    case HLT:
       running = 0; // stops the while loop
+      // move the PC to the next instruction
+      cpu->PC += 1;
       break;
-      
+
       // MUL
-    case 0b10100010:
+    case MUL:
       break;
     default:
-      printf("Your code does not work bruhh %d", IR);
+      printf("Issued an Unexpected instruction 0x%02X at 0x%02X\n", IR, cpu->PC);
+      exit(1);
     }
   }
 }
