@@ -81,13 +81,14 @@ void alu(struct cpu *cpu, enum alu_op op, unsigned char regA, unsigned char regB
   switch (op) {
     case ALU_MUL:
       // TODO
-      cpu->register[regA] = regA * regB;
+      cpu->registers[regA] *= regB;
       break;
     case ALU_ADD:
       cpu->registers[regA] = regA + regB;
       break;
     case ALU_NOP:
       // No operation. Do nothing at this instruction
+      cpu->registers[regA] += regB;
       break;
     case ALU_NOT:
       break;
@@ -107,6 +108,8 @@ void alu(struct cpu *cpu, enum alu_op op, unsigned char regA, unsigned char regB
     case ALU_RET:
       
       break;
+    default:
+      break;
   }
 }
 
@@ -117,11 +120,11 @@ void cpu_run(struct cpu *cpu)
 {
   int running = 1; // True until we get a HLT instruction
   // init current instructions
-  unsigned char IR;
-  // init operand 0 and 1
-  unsigned char operand0;
-  unsigned char operand1;
-  unsigned char operand2;
+  // unsigned char IR;
+  // // init operand 0 and 1
+  // unsigned char operand0;
+  // unsigned char operand1;
+  // unsigned char operand2;
 
   while (running) {
     // TODO
@@ -131,12 +134,23 @@ void cpu_run(struct cpu *cpu)
     // 4. switch() over it to decide on a course of action.
     // 5. Do whatever the instruction should do according to the spec.
     // 6. Move the PC to the next instruction.
-    IR = cpu_ram_read(cpu, cpu->PC);
+    unsigned char instruction = cpu->ram[cpu->PC];
 
-    operand1 = cpu_ram_read(cpu, cpu->PC + 1);
-    operand2 = cpu_ram_read(cpu, cpu->PC + 2);
+    unsigned int combined_operands = instruction >> 6;
 
-    switch (IR)
+    unsigned int operand1;
+    unsigned int operand2;
+    if (combined_operands == 2)
+    {
+      operand1 = cpu->ram[cpu->PC + 1];
+      operand2 = cpu->ram[cpu->PC + 2];
+    }
+    else if (combined_operands == 1)
+    {
+      operand1 = cpu->ram[cpu->PC + 1];
+    }
+
+    switch (instruction)
     {
       // LDI
     case LDI:
