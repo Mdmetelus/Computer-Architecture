@@ -19,14 +19,21 @@ unsigned char cpu_ram_read(struct cpu *cpu, unsigned char mar) {
 }
 
 // write to the ram
-void cpu_ram_write(struct cpu *cpu, unsigned char mar, unsigned char mdr)
-{
-  cpu->ram[mdr] = mdr;
+// void cpu_ram_write(struct cpu *cpu, unsigned char mar, unsigned char mdr)
+// {
+//   cpu->ram[mdr] = mdr;
+// }
+
+unsigned char cpu_pop(struct cpu *cpu) {
+  unsigned char val = cpu_ram_read(cpu, cpu->registers[SP]);
+  // Increment 
+  cpu->registers[SP]++;
+  return val;
 }
 
-void cpu_push(struct cpu *cpu, unsigned char val)
+    void cpu_push(struct cpu *cpu, unsigned char val)
 {
-  
+  // decriment
   cpu->registers[SP]--;
   
   cpu_ram_write(cpu, cpu->registers[SP], val);
@@ -34,43 +41,48 @@ void cpu_push(struct cpu *cpu, unsigned char val)
 /**
  * Load the binary bytes from a .ls8 source file into a RAM array
  */
-void cpu_load(struct cpu *cpu, int argc, char *argv[])
-{
+void cpu_load(struct cpu *cpu, char *filename) {
 
 
-  if (argc < 2)
-  {
-    cpu->ram[address++] = data[i];
-    fprintf(stderr, "Sorry, missing arguments. Please provide: ./ls8 filename\n");
-    exit(1);
-  }
+  // if (argc < 2)
+  // {
+  //   cpu->ram[address++] = data[i];
+  //   fprintf(stderr, "Sorry, missing arguments. Please provide: ./ls8 filename\n");
+  //   exit(1);
+  // }
 
-  // TODO: Replace this with something less hard-coded
-  FILE *fp;
-  char line[1024];
-  char *file = argv[1];
-  fp = fopen(file, "r");
-  int address = 0;
-  fclose(fp);
+  // // TODO: Replace this with something less hard-coded
+  // FILE *fp;
+  // char line[1024];
+  // char *file = argv[1];
+  // fp = fopen(file, "r");
+  // int address = 0;
+  // fclose(fp);
+  FILE *fp = fopen(filename, "r");
 
   if (fp == NULL)
   {
-    fprintf(stderr, "Error: unable to open file %s\n", file);
-    exit(1);
+    // fprintf(stderr, "Error: unable to open file %s\n", file);
+    // exit(1);
+    fprintf(stderr, "Error cannot open this file:  %s\n", filename);
+    exit(2);
   }
+  char line[8192]; // to hold individual lines in the file
+  int address = 0;
 
   while (fgets(line, sizeof(line), fp) != NULL)
   {
-      char *ptr;
-    unsigned char command = strtol(line, &ptr, 2);
+    char *endptr; 
+    
+    unsigned char byte = strtoul(line, &endptr, 2);
 
-    if (ptr == line)
+    if (endptr == line)
     {
       continue;
     }
-    cpu->ram[++address] = command;
+    cpu->ram[address++] = byte;
   }
-    
+  fclose(fp);
 }
 
 /**
